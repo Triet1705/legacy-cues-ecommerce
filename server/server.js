@@ -1,23 +1,32 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const connectDB = require("./config/db");
-const productRoutes = require("./routes/productRoutes");
-
-connectDB();
+const connectDB = require("./config/db.js");
+const productRoutes = require("./routes/productRoutes.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.listen(cors());
+// --- Middlewares ---
+app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("LegacyCues Server is running!");
-});
+// --- Routes ---
+app.use("/api/products", productRoutes);
 
-app.use("/api/product", productRoutes);
+// --- Hàm khởi động Server ---
+const startServer = async () => {
+  try {
+    await connectDB();
 
-app.listen(port, () => {
-  console.log(`Server is listenning on port: ${port}`);
-});
+    app.listen(port, () => {
+      console.log(`Server is listening on port: ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server", error);
+    process.exit(1);
+  }
+};
+
+// --- Gọi hàm để khởi động toàn bộ hệ thống ---
+startServer();
