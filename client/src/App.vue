@@ -1,9 +1,22 @@
+<script setup>
+import { RouterView } from 'vue-router'
+import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
+</script>
+
 <template>
-  <header></header>
+  <Navbar />
 
-  <RouterView />
+  <main>
+    <RouterView />
+  </main>
 
-  <footer></footer>
+  <Footer />
 </template>
 
-<style scoped></style>
+<style scoped>
+main {
+  min-height: 75vh;
+  padding: 2rem 0;
+}
+</style>

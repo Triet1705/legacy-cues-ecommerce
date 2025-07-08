@@ -1,0 +1,23 @@
+:root {
+  --font-primary: 'Inter', Helvetica, Arial, sans-serif;
+  --color-text: #333333;
+  --color-background: #ffffff;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-size: 14px;
+  color: var(--color-text);
+  background-color: var(--color-background);
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
