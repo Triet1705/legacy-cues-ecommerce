@@ -1,7 +1,6 @@
 <script setup>
 defineProps({
-  type: Boolean,
-  default: false,
+  icon: { type: Boolean, default: false },
 })
 </script>
 <template>
@@ -18,7 +17,7 @@ defineProps({
 .base-button {
   align-items: center;
   justify-content: center;
-  display: inline-block;
+  display: inline-flex;
   border: none;
   border-radius: 5px;
   background-color: #333;
