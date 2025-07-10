@@ -1,5 +1,5 @@
 <script setup>
-import ProductCard from '../components/ProductCard.vue'
+import ProductCard from '../components/common/ProductCard.vue'
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
@@ -37,7 +37,6 @@ onMounted(() => {
         :to="`/product/${product._id}`"
         class="product-link"
       >
-        >
         <ProductCard :product="product" />
       </RouterLink>
     </div>
