@@ -2,6 +2,8 @@
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ButtonCommon from '@/components/common/ButtonCommon.vue'
+import { ShoppingCartOutlined } from '@ant-design/icons-vue'
 
 const route = useRoute()
 const productId = route.params.id
@@ -47,7 +49,13 @@ onMounted(() => {
             </p>
             <p class="text-body" style="margin-bottom: 2rem">{{ product.description }}</p>
 
-            <button class="add-to-cart-btn">Add to Cart</button>
+            <ButtonCommon :icon="true" class="add-to-cart-btn">
+              <template #icon>
+                <ShoppingCartOutlined />
+              </template>
+              Add to Cart
+            </ButtonCommon>
+            <!-- <button class="add-to-cart-btn">Add to Cart</button> -->
 
             <div class="product-specs">
               <h3>Specifications</h3>
@@ -81,16 +89,10 @@ onMounted(() => {
 
 .add-to-cart-btn {
   width: 100%;
-  padding: 1rem;
-  background-color: #333;
-  color: #fff;
   border: none;
   font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
   transition: background-color 0.3s ease;
   margin-bottom: 2rem;
-  border-radius: 5px;
 }
 .add-to-cart-btn:hover {
   background-color: #555;

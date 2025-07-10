@@ -1,16 +1,20 @@
+<script setup>
+import { RouterLink } from 'vue-router'
+import ButtonCommon from '@/components/common/ButtonCommon.vue'
+</script>
+
 <template>
   <div class="home-page">
     <div class="hero-section">
       <h1>Welcome to LegacyCues</h1>
       <p>Where craftsmanship meets precision.</p>
-      <RouterLink to="/products" class="cta-button">Shop The Collection</RouterLink>
+      <!-- <RouterLink to="/products" class="cta-button">Shop The Collection</RouterLink> -->
+      <RouterLink to="/products">
+        <ButtonCommon>The Collection</ButtonCommon>
+      </RouterLink>
     </div>
   </div>
 </template>
-
-<script setup>
-import { RouterLink } from 'vue-router'
-</script>
 
 <style scoped>
 .home-page {
