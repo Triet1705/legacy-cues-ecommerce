@@ -26,6 +26,7 @@ defineProps({
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.4);
 }
 
 .product-image-wrapper {
@@ -35,7 +36,7 @@ defineProps({
 
 .product-image {
   width: 100%;
-  height: 350px;
+  height: 400px;
   object-fit: contain;
   display: block;
   transition: transform 0.4s ease;
