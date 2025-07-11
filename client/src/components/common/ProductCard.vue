@@ -1,7 +1,7 @@
 <template>
   <div class="product-card">
     <div class="product-image-wrapper">
-      <img :src="product.images" :alt="product.name" class="product-image" />
+      <img :src="product.images[0]" :alt="product.name" class="product-image" />
     </div>
     <div class="product-info">
       <h3 class="product-name">{{ product.name }}</h3>
@@ -26,6 +26,7 @@ defineProps({
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.4);
 }
 
 .product-image-wrapper {
@@ -35,7 +36,7 @@ defineProps({
 
 .product-image {
   width: 100%;
-  height: 350px;
+  height: 400px;
   object-fit: contain;
   display: block;
   transition: transform 0.4s ease;
