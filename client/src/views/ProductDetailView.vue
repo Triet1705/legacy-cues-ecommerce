@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { ShoppingCartOutlined } from '@ant-design/icons-vue'
+import ImageGallery from '@/components/common/ImageGallery.vue'
 
 const route = useRoute()
 const productId = route.params.id
@@ -38,7 +39,7 @@ onMounted(() => {
       <div class="product-main">
         <div class="row">
           <div class="product-gallery col">
-            <img :src="product.images" :alt="product.name" class="main-image" />
+            <img :src="product.images[0]" :alt="product.name" class="main-image" />
           </div>
 
           <div class="product-info col">
