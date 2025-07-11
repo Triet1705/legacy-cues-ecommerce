@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middleware/upload");
 
 const {
   getProduct,
@@ -9,7 +10,10 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
-router.route("/").get(getProduct).post(createProduct);
+router
+  .route("/")
+  .get(getProduct)
+  .post(upload.array("images", 5), createProduct);
 
 router
   .route("/:id")

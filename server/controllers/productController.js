@@ -38,13 +38,32 @@ const createProduct = async (req, res) => {
       diameter,
       countInStock,
     } = req.body;
-
+    const imageUrls = [];
+    if (req.files) {
+      for (const file of req.files) {
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            {
+              folder: "legacy-cues",
+            },
+            (error, result) => {
+              if (error) {
+                return reject(error);
+              }
+              resolve(result);
+            }
+          );
+          uploadStream.end(file.buffer);
+        });
+        imageUrls.push(uploadResult.secure_url);
+      }
+    }
     const product = new Product({
       name,
       brand,
       description,
       price,
-      images,
+      images: imageUrls,
       material,
       weight,
       pin,
