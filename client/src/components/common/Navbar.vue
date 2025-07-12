@@ -1,22 +1,23 @@
 <script setup>
 import Logo from '../icons/Logo.vue'
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
   <nav class="navbar">
     <div class="container">
       <ul class="navbar-nav nav-left">
-        <li><a href="/products">Products</a></li>
-        <li><a href="/about">About</a></li>
+        <li><RouterLink to="/products">Products</RouterLink></li>
+        <li><RouterLink to="/about">About</RouterLink></li>
       </ul>
 
-      <a class="navbar-brand" href="/">
+      <RouterLink to="/" class="navbar-brand">
         <Logo />
-      </a>
+      </RouterLink>
 
       <ul class="navbar-nav nav-right">
-        <li><a href="#">Login</a></li>
-        <li><a href="#">Cart</a></li>
+        <li><RouterLink to="/login">Login</RouterLink></li>
+        <li><RouterLink to="/cart">Cart</RouterLink></li>
       </ul>
     </div>
   </nav>
@@ -65,11 +66,23 @@ import Logo from '../icons/Logo.vue'
 }
 
 .navbar-nav a {
-  color: #333;
+  color: #555;
   text-decoration: none;
   font-size: 1rem;
-  font-weight: bold 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease-in-out;
+}
+
+.navbar-nav a.router-link-exact-active {
+  color: #000;
+  font-weight: 700;
+  border-bottom-color: #000;
+}
+
+.navbar-nav a:not(.router-link-exact-active):hover {
+  color: #000;
 }
 </style>
