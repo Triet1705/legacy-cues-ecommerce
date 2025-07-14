@@ -1,7 +1,7 @@
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import ButtonCommon from '@/components/common/ButtonCommon.vue'
 
-// Kết nối với "Kho Giỏ hàng"
 const cartStore = useCartStore()
 </script>
 
@@ -20,8 +20,8 @@ const cartStore = useCartStore()
           <thead>
             <tr>
               <th class="product-name" colspan="2">Product</th>
-              <th class="product-price">Price</th>
-              <th class="product-quantity">Quantity</th>
+              <th class="product-price" style="text-align: center">Price</th>
+              <th class="product-quantity" style="text-align: center">Quantity</th>
               <th class="product-subtotal">Subtotal</th>
             </tr>
           </thead>
@@ -46,7 +46,7 @@ const cartStore = useCartStore()
                   <button @click="cartStore.incrementQuantity(item.product._id)">+</button>
                 </div>
               </td>
-              <td class="product-subtotal">
+              <td class="product-subtotal" style="text-align: center">
                 <span>${{ (item.product.price * item.quantity).toFixed(2) }}</span>
               </td>
             </tr>
@@ -69,7 +69,7 @@ const cartStore = useCartStore()
             <span>Total</span>
             <span>${{ cartStore.cartTotal.toFixed(2) }}</span>
           </div>
-          <button class="checkout-btn">Proceed to Checkout</button>
+          <ButtonCommon class="checkout-btn">Proceed to Checkout</ButtonCommon>
         </div>
       </div>
     </div>
@@ -103,10 +103,11 @@ const cartStore = useCartStore()
 }
 .shop-table th,
 .shop-table td {
-  padding: 1rem;
+  padding: 2rem;
   border-bottom: 1px solid #e5e5e5;
   text-align: left;
 }
+
 .shop-table th {
   text-transform: uppercase;
   font-size: 0.8rem;
@@ -150,7 +151,7 @@ const cartStore = useCartStore()
 }
 .quantity-input input {
   width: 40px;
-  text-align: center;
+  text-align: right;
   border: none;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;

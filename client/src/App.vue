@@ -18,5 +18,6 @@ import Footer from './components/common/Footer.vue'
 main {
   min-height: 75vh;
   padding: 2rem 0;
+  background: #fff;
 }
 </style>

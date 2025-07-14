@@ -58,7 +58,10 @@ onMounted(() => {
             <p class="text-title-lg" style="margin-bottom: 1.5rem">
               ${{ product.price.toFixed(2) }}
             </p>
-            <p class="text-body" style="margin-bottom: 2rem">{{ product.description }}</p>
+            <p class="text-body">{{ product.description }}</p>
+            <p class="text-body count-in-stock" style="margin-bottom: 2rem">
+              {{ product.countInStock }} in stock
+            </p>
 
             <ButtonCommon :icon="true" class="add-to-cart-btn" @click="handleAddToCart">
               <template #icon>
@@ -106,6 +109,10 @@ onMounted(() => {
 }
 .add-to-cart-btn:hover {
   background-color: #555;
+}
+
+.count-in-stock {
+  color: #7a9c59;
 }
 
 .product-specs h3 {
