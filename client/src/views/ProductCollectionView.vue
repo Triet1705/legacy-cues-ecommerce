@@ -24,9 +24,8 @@ onMounted(() => {
 })
 </script>
 <template>
+  <div class="banner"></div>
   <main class="home-view">
-    <h1 class="page-title">Our Collection</h1>
-
     <div v-if="isLoading" class="loading-message">Loading products...</div>
 
     <div v-if="error" class="error-message">{{ error }}</div>
@@ -49,16 +48,18 @@ onMounted(() => {
   margin: 0 auto;
   padding: 0 2rem;
 }
-.page-title {
-  text-align: center;
-  font-size: 2em;
+.banner {
   margin-bottom: 2rem;
-  font-weight: 600;
+  width: 1536px;
+  height: 420px;
+  background-image: url('../assets/images/pericontact.jpg');
+  background-position: center;
 }
+
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 .loading-message,
 .error-message {
