@@ -36,7 +36,7 @@ defineProps({
 
 .product-image {
   width: 100%;
-  height: 400px;
+  height: 300px;
   object-fit: contain;
   display: block;
   transition: transform 0.4s ease;
