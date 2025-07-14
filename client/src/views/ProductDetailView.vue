@@ -4,7 +4,8 @@ import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { ShoppingCartOutlined } from '@ant-design/icons-vue'
-import ImageGallery from '@/components/common/ImageGallery.vue'
+import ProductGallery from '@/components/common/ProductGallery.vue'
+import { useCartStore } from '@/stores/cart'
 
 const route = useRoute()
 const productId = route.params.id
@@ -12,6 +13,8 @@ const productId = route.params.id
 const product = ref(null)
 const isLoading = ref(true)
 const error = ref(null)
+
+const cartStore = useCartStore()
 
 const fetchProduct = async () => {
   try {
@@ -22,6 +25,13 @@ const fetchProduct = async () => {
     console.error(error)
   } finally {
     isLoading.value = false
+  }
+}
+
+const handleAddToCart = () => {
+  if (product.value) {
+    cartStore.addToCart(product.value)
+    alert(`${product.value.name} has been added to cart!`)
   }
 }
 
@@ -39,7 +49,7 @@ onMounted(() => {
       <div class="product-main">
         <div class="row">
           <div class="product-gallery col">
-            <img :src="product.images[0]" :alt="product.name" class="main-image" />
+            <ProductGallery :images="product.images" />
           </div>
 
           <div class="product-info col">
@@ -48,15 +58,17 @@ onMounted(() => {
             <p class="text-title-lg" style="margin-bottom: 1.5rem">
               ${{ product.price.toFixed(2) }}
             </p>
-            <p class="text-body" style="margin-bottom: 2rem">{{ product.description }}</p>
+            <p class="text-body">{{ product.description }}</p>
+            <p class="text-body count-in-stock" style="margin-bottom: 2rem">
+              {{ product.countInStock }} in stock
+            </p>
 
-            <ButtonCommon :icon="true" class="add-to-cart-btn">
+            <ButtonCommon :icon="true" class="add-to-cart-btn" @click="handleAddToCart">
               <template #icon>
                 <ShoppingCartOutlined />
               </template>
               Add to Cart
             </ButtonCommon>
-            <!-- <button class="add-to-cart-btn">Add to Cart</button> -->
 
             <div class="product-specs">
               <h3>Specifications</h3>
@@ -97,6 +109,10 @@ onMounted(() => {
 }
 .add-to-cart-btn:hover {
   background-color: #555;
+}
+
+.count-in-stock {
+  color: #7a9c59;
 }
 
 .product-specs h3 {
