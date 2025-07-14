@@ -2,13 +2,14 @@
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons-vue'
-
+import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue'
+import { Popover } from 'ant-design-vue'
+import ActionMenu from '@/components/common/ActionMenu.vue'
 const products = ref()
 const isLoading = ref(true)
 const error = ref(null)
 
-const deleteProduct = async (id) => {
+const handleDelete = async (id) => {
   if (window.confirm('Are you sure you want to delete this product?')) {
     try {
       await axios.delete(`http://localhost:5000/api/products/${id}`)
@@ -21,7 +22,7 @@ const deleteProduct = async (id) => {
   }
 }
 
-const updateProduct = async () => {
+const handleEdit = async () => {
   try {
     const response = await axios.put(`http://localhost:5000/api/products/${id}`)
     products.value = response.data
@@ -87,18 +88,15 @@ onMounted(() => {
               <td>${{ product.price.toFixed(2) }}</td>
               <td>{{ product.countInStock }}</td>
               <td>
-                <div class="action-buttons">
-                  <ButtonCommon :icon="true" class="btn-action btn-edit">
-                    <template #icon><EditOutlined /></template>
+                <Popover trigger="click" placement="left">
+                  <template #content>
+                    <ActionMenu @edit="handleEdit(product)" @delete="handleDelete(product._id)" />
+                  </template>
+
+                  <ButtonCommon :icon="true" class="btn-action-trigger">
+                    <template #icon><MoreOutlined /></template>
                   </ButtonCommon>
-                  <ButtonCommon
-                    :icon="true"
-                    class="btn-action btn-delete"
-                    @click="deleteProduct(product._id)"
-                  >
-                    <template #icon><DeleteOutlined /></template>
-                  </ButtonCommon>
-                </div>
+                </Popover>
               </td>
             </tr>
           </tbody>
@@ -182,21 +180,18 @@ onMounted(() => {
   gap: 1rem;
 }
 
-.btn-action {
-  padding: 0.5rem !important;
-  font-size: 1rem;
-  border-radius: 5px;
+.btn-action-trigger {
   background: none !important;
-  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  color: #555;
+  font-size: 1.2rem;
+  padding: 0.5rem !important;
 }
-.btn-edit {
-  color: #1890ff;
-}
-.btn-delete {
-  color: #ff4d4f;
-}
-.btn-action:hover {
-  background-color: #f0f0f0 !important;
+
+.popover-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .loading-message,
