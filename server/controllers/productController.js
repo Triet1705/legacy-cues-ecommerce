@@ -75,8 +75,13 @@ const createProduct = async (req, res) => {
     const createProduct = await product.save();
     res.status(201).json(createProduct);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({ message: messages.join(", ") });
+    }
     res.status(500).json({ message: "Server Error" });
+    // --------------------------
   }
 };
 
