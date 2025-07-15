@@ -3,11 +3,23 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue'
-import { Popover } from 'ant-design-vue'
+import { Popover, Modal } from 'ant-design-vue'
 import ActionMenu from '@/components/common/ActionMenu.vue'
+import FormProduct from './FormProduct.vue'
 const products = ref()
 const isLoading = ref(true)
 const error = ref(null)
+
+const isModalOpen = ref(false)
+const editingProduct = ref(null)
+
+const openAddModal = () => {
+  isModalOpen.value = true
+  editingProduct.value = null
+}
+const handleCancel = () => {
+  isModalOpen.value = false
+}
 
 const handleDelete = async (id) => {
   if (window.confirm('Are you sure you want to delete this product?')) {
@@ -22,13 +34,45 @@ const handleDelete = async (id) => {
   }
 }
 
-const handleEdit = async () => {
+const handleEdit = async () => {}
+
+const handleSave = async (formDataWithFiles) => {
+  const { files, ...productData } = formDataWithFiles
+
+  const formData = new FormData()
+
+  Object.entries(productData).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      if (key === 'images' && Array.isArray(value)) {
+        value.forEach((url) => formData.append('existingImages[]', url))
+      } else {
+        formData.append(key, value)
+      }
+    }
+  })
+
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      if (file.originFileObj) {
+        formData.append('images', file.originFileObj)
+      }
+    })
+  }
   try {
-    const response = await axios.put(`http://localhost:5000/api/products/${id}`)
-    products.value = response.data
-  } catch (error) {
-    error.value = 'Failed to update product. Please try again.'
-    console.error(error)
+    if (productData._id) {
+      await axios.put(`http://localhost:5000/api/products/${productData._id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    } else {
+      await axios.post('http://localhost:5000/api/products', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    }
+    isModalOpen.value = false
+    fetchProducts()
+  } catch (err) {
+    console.error('Failed to save product:', err)
+    alert(`Error: ${err.response?.data?.message || 'An unknown error occurred'}`)
   }
 }
 
@@ -52,7 +96,7 @@ onMounted(() => {
     <div class="admin-view container">
       <div class="page-header">
         <h1 class="page-title">Product Management</h1>
-        <ButtonCommon :icon="true">
+        <ButtonCommon :icon="true" @click="openAddModal">
           <template #icon><PlusOutlined /></template>
           Add New Product
         </ButtonCommon>
@@ -88,7 +132,7 @@ onMounted(() => {
               <td>${{ product.price.toFixed(2) }}</td>
               <td>{{ product.countInStock }}</td>
               <td>
-                <Popover trigger="click" placement="left">
+                <Popover trigger="click" placement="bottom">
                   <template #content>
                     <ActionMenu @edit="handleEdit(product)" @delete="handleDelete(product._id)" />
                   </template>
@@ -101,6 +145,9 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
+        <Modal v-model:open="isModalOpen" :footer="null" @cancel="handleCancel" width="850px">
+          <FormProduct :productData="editingProduct" @submit="handleSave" @cancel="handleCancel" />
+        </Modal>
       </div>
     </div>
   </div>
