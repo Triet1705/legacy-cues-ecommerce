@@ -1,8 +1,9 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
-import { Modal, Upload } from 'ant-design-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
+import { Modal as AModal, Upload as AUpload } from 'ant-design-vue'
+
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -13,15 +14,15 @@ function getBase64(file) {
 }
 const previewVisible = ref(false)
 const previewImage = ref('')
+const handlePreviewCancel = () => {
+  previewVisible.value = false
+}
 const handlePreview = async (file) => {
   if (!file.url && !file.preview) {
     file.preview = await getBase64(file.originFileObj)
   }
   previewImage.value = file.url || file.preview
   previewVisible.value = true
-}
-const handleCancel = () => {
-  previewVisible.value = false
 }
 
 const props = defineProps({
@@ -46,8 +47,8 @@ watch(
     if (newData) {
       formState.value = { ...newData }
       fileList.value = (newData.images || []).map((url, index) => ({
-        uid: `-S{index}`,
-        name: `image-S{index}.png`,
+        uid: `-${index}`,
+        name: `image-${index}.png`,
         status: 'done',
         url: url,
       }))
@@ -79,24 +80,12 @@ const handleSubmit = () => {
 }
 
 const handleBeforeUpload = (file) => {
-  fileList.value.push(file)
   return false
 }
-
-const handleRemove = (file) => {
-  const index = fileList.value.findIndex((item) => item.uid === file.uid)
-  if (index !== -1) {
-    fileList.value.splice(index, 1)
-  }
-}
-const modalTitle = computed(() => {
-  return editingProduct.value ? 'Edit Product' : 'Add New Product'
-})
 </script>
 
 <template>
   <form @submit.prevent="handleSubmit" class="product-form">
-    <!-- <div class="text-title-form">{{ modalTitle }}</div> -->
     <div class="text-title-form">Add Product</div>
     <div class="form-section">
       <div class="section-grid">
@@ -147,7 +136,7 @@ const modalTitle = computed(() => {
       </div>
       <div class="input-group full-width">
         <label for="images">Images</label>
-        <Upload
+        <AUpload
           v-model:file-list="fileList"
           list-type="picture-card"
           :before-upload="handleBeforeUpload"
@@ -159,10 +148,10 @@ const modalTitle = computed(() => {
             <PlusOutlined />
             <div style="margin-top: 8px">Upload</div>
           </div>
-        </Upload>
-        <Modal :open="previewVisible" :footer="null" @cancel="handleCancel">
-          <img alt="example" style="width: 100%" :src="previewImage" />
-        </Modal>
+        </AUpload>
+        <AModal :open="previewVisible" :title="null" :footer="null" @cancel="handlePreviewCancel">
+          <img alt="preview" style="width: 100%" :src="previewImage" />
+        </AModal>
       </div>
     </div>
 
@@ -223,7 +212,6 @@ const modalTitle = computed(() => {
   border-color: #6e7c6e;
   box-shadow: 0 0 0 2px rgba(162, 189, 159, 0.2);
 }
-
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -231,10 +219,10 @@ const modalTitle = computed(() => {
   border-top: 1px solid #f0f0f0;
 }
 .btn-save {
-  background-color: #000000;
+  background-color: #1677ff;
 }
 .btn-save:hover {
-  background-color: #545654;
+  background-color: #4096ff;
 }
 .btn-save:disabled {
   background-color: #a0a0a0;
