@@ -18,7 +18,7 @@ router
 router
   .route("/:id")
   .get(getProductById)
-  .put(updateProduct)
+  .put(upload.array("images", 5), updateProduct)
   .delete(deleteProduct);
 
 module.exports = router;
