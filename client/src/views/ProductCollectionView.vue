@@ -50,7 +50,7 @@ onMounted(() => {
 }
 .banner {
   margin-bottom: 2rem;
-  width: 1536px;
+  width: 100%;
   height: 420px;
   background-image: url('../assets/images/pericontact.jpg');
   background-position: center;
