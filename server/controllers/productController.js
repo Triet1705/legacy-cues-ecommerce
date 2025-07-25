@@ -100,7 +100,7 @@ const updateProduct = async (req, res) => {
       description,
       price,
       images,
-      materiral,
+      material,
       weight,
       pin,
       diameter,
