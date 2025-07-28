@@ -12,7 +12,7 @@ export const useCartStore = defineStore('cart', () => {
       if (existingItem.quantity < productToAdd.countInStock) {
         existingItem.quantity++
       } else {
-        alert(`Sorry, we only have ${productToAdd.countInstock} items in stock!`)
+        alert(`Sorry, we only have ${productToAdd.countInStock} items in stock!`)
       }
     } else {
       if (productToAdd.countInStock > 0) {
