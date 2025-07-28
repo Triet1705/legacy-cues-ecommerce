@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
+import { message } from 'ant-design-vue'
 
 export const useCartStore = defineStore('cart', () => {
   const cartItems = ref([])
@@ -11,7 +12,7 @@ export const useCartStore = defineStore('cart', () => {
       if (existingItem.quantity < productToAdd.countInStock) {
         existingItem.quantity++
       } else {
-        alert(`Sorry, we only have ${productToAdd.countInstock} items in stock!`)
+        alert(`Sorry, we only have ${productToAdd.countInStock} items in stock!`)
       }
     } else {
       if (productToAdd.countInStock > 0) {

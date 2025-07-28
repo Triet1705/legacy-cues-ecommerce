@@ -1,6 +1,9 @@
 <script setup>
 import Logo from '../icons/Logo.vue'
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -8,8 +11,7 @@ import { RouterLink } from 'vue-router'
     <div class="container">
       <ul class="navbar-nav nav-left">
         <li><RouterLink to="/products">Products</RouterLink></li>
-        <!-- <li><RouterLink to="/about">About</RouterLink></li> -->
-        <li><RouterLink to="/admin">Admin</RouterLink></li>
+        <li><RouterLink to="/about">About</RouterLink></li>
       </ul>
 
       <RouterLink to="/" class="navbar-brand">
@@ -17,7 +19,22 @@ import { RouterLink } from 'vue-router'
       </RouterLink>
 
       <ul class="navbar-nav nav-right">
-        <li><RouterLink to="/login">Login</RouterLink></li>
+        <li v-if="authStore.isAdmin" class="dropdown">
+          <a href="#" class="dropdown-toggle">Admin</a>
+          <ul class="dropdown-menu">
+            <li><RouterLink to="/admin">Product Management</RouterLink></li>
+            <li><RouterLink to="/admin/users">User Management</RouterLink></li>
+          </ul>
+        </li>
+
+        <li v-if="authStore.isAuthenticated">
+          <a href="#" @click.prevent="authStore.logout()">Logout</a>
+        </li>
+        <template v-else>
+          <li><RouterLink to="/login">Login</RouterLink></li>
+          <li class="separator">|</li>
+          <li><RouterLink to="/register">Register</RouterLink></li>
+        </template>
         <li><RouterLink to="/cart">Cart</RouterLink></li>
       </ul>
     </div>
@@ -85,5 +102,53 @@ import { RouterLink } from 'vue-router'
 
 .navbar-nav a:not(.router-link-exact-active):hover {
   color: #000;
+}
+.separator {
+  color: #e0e0e0;
+  cursor: default;
+}
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  list-style: none;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-menu li a {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #333;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.dropdown-menu li a:hover {
+  background-color: #f5f5f5;
 }
 </style>

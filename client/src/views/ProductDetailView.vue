@@ -32,7 +32,7 @@ const fetchProduct = async () => {
 const handleAddToCart = () => {
   if (product.value) {
     cartStore.addToCart(product.value)
-    message(`${product.value.name} has been added to cart!`)
+    message.success(`${product.value.name} has been added to cart!`)
   }
 }
 
