@@ -6,6 +6,7 @@ import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { ShoppingCartOutlined } from '@ant-design/icons-vue'
 import ProductGallery from '@/components/common/ProductGallery.vue'
 import { useCartStore } from '@/stores/cart'
+import { message } from 'ant-design-vue'
 
 const route = useRoute()
 const productId = route.params.id
@@ -31,7 +32,7 @@ const fetchProduct = async () => {
 const handleAddToCart = () => {
   if (product.value) {
     cartStore.addToCart(product.value)
-    alert(`${product.value.name} has been added to cart!`)
+    message(`${product.value.name} has been added to cart!`)
   }
 }
 

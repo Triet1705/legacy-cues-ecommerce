@@ -87,42 +87,67 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found!" });
+    }
+
     const {
       name,
       brand,
       description,
       price,
-      weight,
       images,
       material,
+      weight,
       pin,
       diameter,
       countInStock,
     } = req.body;
 
-    const product = await Product.findById(req.params.id);
-
-    if (product) {
-      product.name = name;
-      product.brand = brand;
-      product.description = description;
-      product.price = price;
-      product.weight = weight;
-      product.images = images;
-      product.material = material;
-      product.pin = pin;
-      product.diameter = diameter;
-      product.countInStock = countInStock;
-
-      const updateProduct = await product.save();
-
-      res.json(updateProduct);
-    } else {
-      res.status(404).json({ message: "Product not found" });
+    let existingImages = product.images || [];
+    if (typeof existingImages === "string") {
+      existingImages = [existingImages];
     }
+
+    const newImageUrls = [];
+    if (req.files && req.files.length > 0) {
+      const uploadPromises = req.files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: "legacy-cues", resource_type: "auto" },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result.secure_url);
+            }
+          );
+          uploadStream.end(file.buffer);
+        });
+      });
+      const resolvedUrls = await Promise.all(uploadPromises);
+      newImageUrls.push(...resolvedUrls);
+    }
+    product.name = name || product.name;
+    product.brand = brand || product.brand;
+    product.description = description || product.description;
+    product.price = price || product.price;
+    product.weight = weight || product.weight;
+    product.material = material || product.material;
+    product.pin = pin || product.pin;
+    product.diameter = diameter || product.diameter;
+    product.countInStock = countInStock || product.countInStock;
+
+    product.images = [...existingImages, ...newImageUrls];
+    const updateProduct = await product.save();
+    res.json(updateProduct);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Error updating product: ", error);
+    if (error.name === "validationError") {
+      const messages = Object.values(error.errors).map((val) => val.message);
+      return res.status(400).json({ message: messages.join(",") });
+    }
   }
 };
 

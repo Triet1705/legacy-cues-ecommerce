@@ -3,12 +3,13 @@ import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue'
-import { Popover, Modal } from 'ant-design-vue'
+import { Popover, Modal, message } from 'ant-design-vue'
 import ActionMenu from '@/components/common/ActionMenu.vue'
 import FormProduct from './FormProduct.vue'
 const products = ref()
 const isLoading = ref(true)
 const error = ref(null)
+const isSaving = ref(false)
 
 const isModalOpen = ref(false)
 const editingProduct = ref(null)
@@ -17,27 +18,40 @@ const openAddModal = () => {
   isModalOpen.value = true
   editingProduct.value = null
 }
+const openEditModal = (product) => {
+  editingProduct.value = { ...product }
+  isModalOpen.value = true
+}
 const handleCancel = () => {
   isModalOpen.value = false
 }
 
-const handleDelete = async (id) => {
-  if (window.confirm('Are you sure you want to delete this product?')) {
-    try {
-      await axios.delete(`http://localhost:5000/api/products/${id}`)
-      products.value = products.value.filter((p) => p._id !== id)
-      alert('Product deleted successfully!')
-    } catch (err) {
-      console.error('Failed to delete product:', err)
-      alert('Failed to delete product.')
-    }
-  }
+const handleDelete = (id) => {
+  Modal.confirm({
+    title: 'Are you sure you want to delete this product?',
+    content: 'This action cannot be undone.',
+    okText: 'Delete',
+    okType: 'danger',
+    cancelText: 'Cancel',
+    onOk: async () => {
+      try {
+        await axios.delete(`http://localhost:5000/api/products/${id}`)
+        products.value = products.value.filter((p) => p._id !== id)
+        message.success('Product deleted successfully!')
+      } catch (err) {
+        console.error('Failed to delete product:', err)
+        message.error('Failed to delete product.')
+      }
+    },
+    onCancel() {
+      console.log('Delete canceled')
+    },
+  })
 }
 
-const handleEdit = async () => {}
-
-const handleSave = async (formDataWithFiles) => {
-  const { files, ...productData } = formDataWithFiles
+const handleSave = async (dataFromForm) => {
+  isSaving.value = true
+  const { files, ...productData } = dataFromForm
 
   const formData = new FormData()
 
@@ -58,21 +72,29 @@ const handleSave = async (formDataWithFiles) => {
       }
     })
   }
+
   try {
+    let successMessage = ''
     if (productData._id) {
       await axios.put(`http://localhost:5000/api/products/${productData._id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
+      successMessage = 'Product updated successfully!'
     } else {
       await axios.post('http://localhost:5000/api/products', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
+      successMessage = 'Product created successfully!'
     }
+
     isModalOpen.value = false
-    fetchProducts()
+    await fetchProducts()
+    message.success(successMessage)
   } catch (err) {
     console.error('Failed to save product:', err)
-    alert(`Error: ${err.response?.data?.message || 'An unknown error occurred'}`)
+    message.error(err.response?.data?.message || 'An unknown error occurred')
+  } finally {
+    isSaving.value = false
   }
 }
 
@@ -134,7 +156,10 @@ onMounted(() => {
               <td>
                 <Popover trigger="click" placement="bottom">
                   <template #content>
-                    <ActionMenu @edit="handleEdit(product)" @delete="handleDelete(product._id)" />
+                    <ActionMenu
+                      @edit="openEditModal(product)"
+                      @delete="handleDelete(product._id)"
+                    />
                   </template>
 
                   <ButtonCommon :icon="true" class="btn-action-trigger">
@@ -146,7 +171,12 @@ onMounted(() => {
           </tbody>
         </table>
         <Modal v-model:open="isModalOpen" :footer="null" @cancel="handleCancel" width="850px">
-          <FormProduct :productData="editingProduct" @submit="handleSave" @cancel="handleCancel" />
+          <FormProduct
+            :productData="editingProduct"
+            :is-saving="isSaving"
+            @submit="handleSave"
+            @cancel="handleCancel"
+          />
         </Modal>
       </div>
     </div>

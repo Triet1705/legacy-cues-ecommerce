@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
+const { protect, admin } = require("../middleware/authMiddleware");
 
 const {
   getProduct,
@@ -13,12 +14,12 @@ const {
 router
   .route("/")
   .get(getProduct)
-  .post(upload.array("images", 5), createProduct);
+  .post(protect, admin, upload.array("images", 5), createProduct);
 
 router
   .route("/:id")
   .get(getProductById)
-  .put(updateProduct)
-  .delete(deleteProduct);
+  .put(protect, admin, upload.array("images", 5), updateProduct)
+  .delete(protect, admin, deleteProduct);
 
 module.exports = router;
