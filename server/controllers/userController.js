@@ -34,9 +34,11 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const { loginIdentifier, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({
+    $or: [{ email: loginIdentifier }, { name: loginIdentifier }],
+  });
 
   if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
@@ -49,7 +51,7 @@ const loginUser = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error("Invalid email or password");
+    throw new Error("Invalid identifier or password");
   }
 });
 

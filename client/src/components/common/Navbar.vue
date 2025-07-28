@@ -1,6 +1,9 @@
 <script setup>
 import Logo from '../icons/Logo.vue'
 import { RouterLink } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -8,8 +11,10 @@ import { RouterLink } from 'vue-router'
     <div class="container">
       <ul class="navbar-nav nav-left">
         <li><RouterLink to="/products">Products</RouterLink></li>
-        <!-- <li><RouterLink to="/about">About</RouterLink></li> -->
-        <li><RouterLink to="/admin">Admin</RouterLink></li>
+        <li v-if="authStore.isAdmin">
+          <RouterLink to="/admin">Admin</RouterLink>
+        </li>
+        <li><RouterLink to="/about">About</RouterLink></li>
       </ul>
 
       <RouterLink to="/" class="navbar-brand">
@@ -17,7 +22,12 @@ import { RouterLink } from 'vue-router'
       </RouterLink>
 
       <ul class="navbar-nav nav-right">
-        <li><RouterLink to="/login">Login</RouterLink></li>
+        <li v-if="authStore.isAuthenticated">
+          <a href="#" @click.prevent="authStore.logout()">Logout</a>
+        </li>
+        <li v-else>
+          <RouterLink to="/login">Login</RouterLink>
+        </li>
         <li><RouterLink to="/cart">Cart</RouterLink></li>
       </ul>
     </div>

@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import Swiper from 'swiper'
 
 const props = defineProps({
   images: {
