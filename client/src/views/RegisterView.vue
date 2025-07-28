@@ -4,26 +4,52 @@ import { useRouter } from 'vue-router'
 import { message } from 'ant-design-vue'
 import axios from 'axios'
 import ButtonCommon from '@/components/common/ButtonCommon.vue'
+import {
+  validateName,
+  validateEmail,
+  validatePassword,
+  validateConfirmPassword,
+} from '@/stores/validator'
 
 const router = useRouter()
 
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const confirmPassword = ref('')
+const form = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+
+const errors = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+const validateForm = () => {
+  errors.value.name = validateName(form.value.name)
+  errors.value.email = validateEmail(form.value.email)
+  errors.value.password = validatePassword(form.value.password)
+  errors.value.confirmPassword = validateConfirmPassword(
+    form.value.password,
+    form.value.confirmPassword,
+  )
+
+  return Object.values(errors.value).every((errorMsg) => errorMsg === '')
+}
 const isLoading = ref(false)
 
 const handleRegister = async () => {
-  if (password.value !== confirmPassword.value) {
-    message.error('Passwords do not match!')
+  if (!validateForm()) {
     return
   }
+
   isLoading.value = true
   try {
     await axios.post('/api/users/register', {
-      name: name.value,
-      email: email.value,
-      password: password.value,
+      name: form.value.name,
+      email: form.value.email,
+      password: form.value.password,
     })
     message.success('Registration successful! Please log in.')
     router.push({ name: 'login' })
@@ -39,22 +65,26 @@ const handleRegister = async () => {
   <div class="register-view">
     <div class="register-form-container">
       <h1 class="form-title">Create Account</h1>
-      <form @submit.prevent="handleRegister">
+      <form @submit.prevent="handleRegister" novalidate>
         <div class="input-group">
           <label for="name">Name</label>
-          <input v-model="name" type="text" id="name" required />
+          <input v-model="form.name" type="text" id="name" />
+          <span v-if="errors.name" class="error-text">{{ errors.name }}</span>
         </div>
         <div class="input-group">
           <label for="email">Email</label>
-          <input v-model="email" type="email" id="email" required />
+          <input v-model="form.email" type="email" id="email" />
+          <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
         </div>
         <div class="input-group">
           <label for="password">Password</label>
-          <input v-model="password" type="password" id="password" required />
+          <input v-model="form.password" type="password" id="password" />
+          <span v-if="errors.password" class="error-text">{{ errors.password }}</span>
         </div>
         <div class="input-group">
           <label for="confirmPassword">Confirm Password</label>
-          <input v-model="confirmPassword" type="password" id="confirmPassword" required />
+          <input v-model="form.confirmPassword" type="password" id="confirmPassword" />
+          <span v-if="errors.confirmPassword" class="error-text">{{ errors.confirmPassword }}</span>
         </div>
         <ButtonCommon type="submit" class="register-btn" :disabled="isLoading">
           {{ isLoading ? 'Creating Account...' : 'Register' }}
@@ -117,5 +147,16 @@ const handleRegister = async () => {
   font-weight: 600;
   color: #1677ff;
   text-decoration: none;
+}
+.error-text {
+  color: #ff4d4f;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+.input-group input {
+  transition: border-color 0.3s ease;
+}
+.input-group:has(.error-text) input {
+  border-color: #ff4d4f;
 }
 </style>
