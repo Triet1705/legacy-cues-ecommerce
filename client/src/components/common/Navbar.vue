@@ -25,9 +25,11 @@ const authStore = useAuthStore()
         <li v-if="authStore.isAuthenticated">
           <a href="#" @click.prevent="authStore.logout()">Logout</a>
         </li>
-        <li v-else>
-          <RouterLink to="/login">Login</RouterLink>
-        </li>
+        <template v-else>
+          <li><RouterLink to="/login">Login</RouterLink></li>
+          <li class="separator">|</li>
+          <li><RouterLink to="/register">Register</RouterLink></li>
+        </template>
         <li><RouterLink to="/cart">Cart</RouterLink></li>
       </ul>
     </div>
@@ -95,5 +97,9 @@ const authStore = useAuthStore()
 
 .navbar-nav a:not(.router-link-exact-active):hover {
   color: #000;
+}
+.separator {
+  color: #e0e0e0;
+  cursor: default;
 }
 </style>

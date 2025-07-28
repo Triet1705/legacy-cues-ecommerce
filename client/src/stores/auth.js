@@ -27,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
       await axios.post('/api/users/logout')
       user.value = null
       localStorage.removeItem('userInfo')
+      window.location.href = '/login'
     } catch (error) {
       console.error('Logout failed:', error)
     }

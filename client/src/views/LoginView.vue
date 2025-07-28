@@ -35,7 +35,7 @@ const handleLogin = async () => {
   <div class="login-view">
     <div class="login-form-container">
       <h1 class="form-title">Login</h1>
-      <p class="form-subtitle">Welcome back! Please enter your details.</p>
+      <p class="form-subtitle">Welcome back!</p>
       <form @submit.prevent="handleLogin">
         <div class="input-group">
           <label for="loginIdentifier">Email or Username</label>
@@ -48,6 +48,10 @@ const handleLogin = async () => {
         <ButtonCommon type="submit" class="login-btn" :disabled="isLoading">
           {{ isLoading ? 'Logging in...' : 'Login' }}
         </ButtonCommon>
+        <p class="register-link">
+          Doesn't have an account yet?
+          <RouterLink to="/register">Register</RouterLink>
+        </p>
       </form>
     </div>
   </div>
@@ -59,7 +63,7 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 80px);
-  background-color: #f0f1f3;
+  background-color: #fff;
 }
 .login-form-container {
   background-color: #fff;
@@ -97,5 +101,15 @@ const handleLogin = async () => {
 }
 .login-btn {
   width: 100%;
+}
+.register-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #555;
+}
+.register-link a {
+  font-weight: 600;
+  color: #1677ff;
+  text-decoration: none;
 }
 </style>
