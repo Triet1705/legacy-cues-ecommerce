@@ -54,7 +54,7 @@ const handleLogin = async () => {
   <div class="login-view">
     <div class="login-form-container">
       <h1 class="form-title">Login</h1>
-      <p class="form-subtitle">Welcome back! Please enter your details.</p>
+      <p class="form-subtitle">Welcome back!</p>
       <form @submit.prevent="handleLogin" novalidate>
         <div class="input-group">
           <label for="loginIdentifier">Email or Username</label>
@@ -84,7 +84,7 @@ const handleLogin = async () => {
   justify-content: center;
   align-items: center;
   min-height: calc(100vh - 80px);
-  background-color: #f0f1f3;
+  background-color: #fff;
 }
 .login-form-container {
   background-color: #fff;
