@@ -5,7 +5,7 @@ import ButtonCommon from '@/components/common/ButtonCommon.vue'
 import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue'
 import { Popover, Modal, message } from 'ant-design-vue'
 import ActionMenu from '@/components/common/ActionMenu.vue'
-import FormProduct from './FormProduct.vue'
+import FormProduct from './CreateForm/FormProduct.vue'
 const products = ref()
 const isLoading = ref(true)
 const error = ref(null)
