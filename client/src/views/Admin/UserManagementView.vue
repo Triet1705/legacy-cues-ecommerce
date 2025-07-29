@@ -1,11 +1,31 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { message, Switch as ASwitch } from 'ant-design-vue'
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons-vue'
-
+import { message, Switch as ASwitch, Modal as AModal, Popover as APopover } from 'ant-design-vue'
+import { PlusOutlined, MoreOutlined } from '@ant-design/icons-vue'
+import ButtonCommon from '@/components/common/ButtonCommon.vue'
+import ActionMenu from '@/components/common/ActionMenu.vue'
+import FormUser from './CreateForm/FormUser.vue'
 const users = ref([])
 const isLoading = ref(true)
+const isSaving = ref(false)
+
+const isModalOpen = ref(false)
+const editingUser = ref(null)
+
+const openAddModal = () => {
+  editingUser.value = null
+  isModalOpen.value = true
+}
+
+const openEditModal = (user) => {
+  editingUser.value = { ...user }
+  isModalOpen.value = true
+}
+
+const handleCancel = () => {
+  isModalOpen.value = false
+}
 
 const fetchUsers = async () => {
   isLoading.value = true
@@ -19,16 +39,54 @@ const fetchUsers = async () => {
   }
 }
 
+const handleSaveUser = async (userData) => {
+  isSaving.value = true
+  try {
+    if (userData._id) {
+      const { data: updatedUser } = await axios.put(`/api/users/${userData._id}`, userData)
+      const index = users.value.findIndex((u) => u._id === updatedUser._id)
+      if (index !== -1) users.value[index] = { ...users.value[index], ...updatedUser }
+      message.success('User updated successfully!')
+    } else {
+      await axios.post('/api/users', userData)
+      message.success('User created successfully!')
+      await fetchUsers()
+    }
+    isModalOpen.value = false
+  } catch (err) {
+    message.error(err.response?.data?.message || 'Failed to save user.')
+  } finally {
+    isSaving.value = false
+  }
+}
+const handleDelete = (user) => {
+  AModal.confirm({
+    title: `Delete user ${user.name}?`,
+    content: 'This action cannot be undone.',
+    okText: 'Delete',
+    okType: 'danger',
+    onOk: async () => {
+      try {
+        await axios.delete(`/api/users/${user._id}`)
+        users.value = users.value.filter((u) => u._id !== user._id)
+        message.success('User deleted successfully!')
+      } catch (err) {
+        message.error(err.response?.data?.message || 'Failed to delete user.')
+      }
+    },
+  })
+}
+
 const handleAdminChange = async (user, checked) => {
   try {
     await axios.put(`/api/users/${user._id}`, { isAdmin: checked })
     message.success(`User ${user.name}'s admin status updated.`)
     const userInList = users.value.find((u) => u._id === user._id)
-    if (userInList) {
-      userInList.isAdmin = checked
-    }
+    if (userInList) userInList.isAdmin = checked
   } catch (error) {
     message.error('Failed to update admin status.')
+    const userInList = users.value.find((u) => u._id === user._id)
+    if (userInList) userInList.isAdmin = !checked
   }
 }
 
@@ -40,21 +98,24 @@ onMounted(fetchUsers)
     <div class="admin-view container">
       <div class="page-header">
         <h1 class="page-title">User Management</h1>
+        <ButtonCommon :icon="true" @click="openAddModal">
+          <template #icon><PlusOutlined /></template>
+          Add New User
+        </ButtonCommon>
       </div>
-      <div class="table-container">
+      <div v-if="isLoading" class="loading-message">Loading...</div>
+      <div v-else class="table-container">
         <table class="data-table">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Name</th>
               <th>Email</th>
               <th>Admin</th>
-              <th>Actions</th>
+              <th style="width: 120px">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="user in users" :key="user._id">
-              <td>{{ user._id }}</td>
               <td>{{ user.name }}</td>
               <td>
                 <a :href="`mailto:${user.email}`">{{ user.email }}</a>
@@ -63,16 +124,38 @@ onMounted(fetchUsers)
                 <a-switch
                   :checked="user.isAdmin"
                   @change="(checked) => handleAdminChange(user, checked)"
-                >
-                  <template #checkedChildren><CheckOutlined /></template>
-                  <template #unCheckedChildren><CloseOutlined /></template>
-                </a-switch>
+                />
               </td>
-              <td></td>
+              <td>
+                <a-popover trigger="click" placement="left">
+                  <template #content>
+                    <ActionMenu @edit="openEditModal(user)" @delete="handleDelete(user)" />
+                  </template>
+                  <ButtonCommon :icon="true" class="btn-action-trigger">
+                    <template #icon><MoreOutlined /></template>
+                  </ButtonCommon>
+                </a-popover>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <AModal
+        v-model:open="isModalOpen"
+        :title="editingUser ? 'Edit User' : 'Add New User'"
+        :footer="null"
+        @cancel="handleCancel"
+        width="500px"
+        destroyOnClose
+      >
+        <FormUser
+          :userData="editingUser"
+          :is-saving="isSaving"
+          @submit="handleSaveUser"
+          @cancel="handleCancel"
+        />
+      </AModal>
     </div>
   </div>
 </template>
@@ -88,6 +171,9 @@ onMounted(fetchUsers)
   padding-bottom: 2rem;
 }
 .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 2rem;
 }
 .page-title {
@@ -113,5 +199,17 @@ onMounted(fetchUsers)
 .data-table thead th {
   background-color: #fafafa;
   font-weight: 600;
+}
+.btn-action-trigger {
+  background: none !important;
+  border: 1px solid transparent;
+  color: #555;
+  font-size: 1.2rem;
+  padding: 0.5rem !important;
+}
+.loading-message {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
 }
 </style>
