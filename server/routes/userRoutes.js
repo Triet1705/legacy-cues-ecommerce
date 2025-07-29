@@ -10,13 +10,16 @@ const {
   deleteUser,
   getUserById,
   updateUser,
+  creatUser,
 } = require("../controllers/userController");
 
+// PUBLIC
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 
-router.route("/").get(protect, admin, getUsers);
+//ADMIN
+router.route("/").get(protect, admin, getUsers).post(protect, admin, creatUser);
 router
   .route("/:id")
   .delete(protect, admin, deleteUser)

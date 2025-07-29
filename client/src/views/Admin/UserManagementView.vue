@@ -45,12 +45,10 @@ const handleSaveUser = async (userData) => {
     if (userData._id) {
       const { data: updatedUser } = await axios.put(`/api/users/${userData._id}`, userData)
       const index = users.value.findIndex((u) => u._id === updatedUser._id)
-      if (index !== -1) {
-        users.value[index] = { ...users.value[index], ...updatedUser }
-      }
+      if (index !== -1) users.value[index] = { ...users.value[index], ...updatedUser }
       message.success('User updated successfully!')
     } else {
-      await axios.post('/api/users/register', userData)
+      await axios.post('/api/users', userData)
       message.success('User created successfully!')
       await fetchUsers()
     }
@@ -61,7 +59,6 @@ const handleSaveUser = async (userData) => {
     isSaving.value = false
   }
 }
-
 const handleDelete = (user) => {
   AModal.confirm({
     title: `Delete user ${user.name}?`,
